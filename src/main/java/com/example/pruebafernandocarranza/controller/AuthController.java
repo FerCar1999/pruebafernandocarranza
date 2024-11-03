@@ -6,6 +6,8 @@ package com.example.pruebafernandocarranza.controller;
 
 import com.example.pruebafernandocarranza.model.User;
 import com.example.pruebafernandocarranza.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties;
@@ -50,26 +52,11 @@ public class AuthController {
         return ResponseEntity.badRequest().body(new ResponseMessage("Credenciales inválidas"));
     }
 
-    // Método para cerrar sesión
     @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-            // Aquí deberías manejar el cierre de sesión
-            return ResponseEntity.ok(new ResponseMessage("Sesión cerrada exitosamente"));
-        }
-        return ResponseEntity.badRequest().body(new ResponseMessage("No hay sesión iniciada"));
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        return ResponseEntity.ok(new ResponseMessage("Sesión cerrada exitosamente"));
     }
 
-    // Método para verificar si hay una sesión iniciada
-    @GetMapping("/session")
-    public ResponseEntity<?> checkSession() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            return ResponseEntity.ok(new ResponseMessage("Sesión activa"));
-        }
-        return ResponseEntity.ok(new ResponseMessage("No hay sesión activa"));
-    }
 
     // Clase interna para manejar las respuestas
     public static class ResponseMessage {

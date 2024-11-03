@@ -28,24 +28,14 @@
         </div>
     </nav>
     <div class="container mt-5">
-        <div id="sessionStatus" class="alert alert-info" role="alert"></div>
+        <a class="nav-link" href="categories.html">Categorías</a>
+        <a class="nav-link" href="users.html">Usuarios</a>
+        <a class="nav-link" href="products.html">Productos</a>
+        <button id="logoutButton" class="btn btn-danger">Cerrar Sesión</button>
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Verificar si hay una sesión activa
-            fetch("api/auth/session")
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById("sessionStatus").innerText = data.message;
-                    if (data.message === "No hay sesión iniciada") {
-                        window.location.href = "login.html"; // Redirige al login si no hay sesión
-                    }
-                })
-                .catch(error => {
-                    console.error("Error al verificar la sesión:", error);
-                });
-
             // Botón para cerrar sesión
             document.getElementById("logoutButton").addEventListener("click", function() {
                 fetch("api/auth/logout", { method: "POST" })
