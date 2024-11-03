@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categorías</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="dashboard.html">Dashboard</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="categories.html">Categorías</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="users.html">Usuarios</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="products.html">Productos</a>
+                </li>
+            </ul>
+            <button id="logoutButton" class="btn btn-danger">Cerrar Sesión</button>
+        </div>
+    </nav>
+    <div class="container">
+        <h2 class="mt-5">Categorías</h2>
+        <form id="categoryForm">
+            <input type="hidden" id="categoryId">
+            <div class="form-group">
+                <label for="categoryName">Nombre de la Categoría</label>
+                <input type="text" class="form-control" id="categoryName" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar Categoría</button>
+        </form>
+        <div id="categoryList" class="mt-3"></div>
+    </div>
+
+    <script>
+        document.getElementById("categoryForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const id = document.getElementById("categoryId").value;
+            const name = document.getElementById("categoryName").value;
+
+            if (id) {
+                // Actualizar categoría
+                fetch(`api/categories/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ name })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    loadCategories();
+                    clearForm();
+                });
+            } else {
+                // Crear categoría
+                fetch("api/categories", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ name })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    loadCategories();
+                    clearForm();
+                });
+            }
+        });
+
+        function loadCategories() {
+            fetch("api/categories")
+                .then(response => response.json())
+                .then(categories => {
+                    const list = document.getElementById("categoryList");
+                    list.innerHTML = `<h3>Lista de Categorías</h3><ul class='list-group'>`;
+                    categories.forEach(category => {
+                        list.innerHTML += `
+                            <li class='list-group-item'>
+                                ${category.name}
+                                <button onclick="editCategory('${category.id}', '${category.name}')" class='btn btn-warning btn-sm float-right'>Editar</button>
+                                <button onclick="deleteCategory('${category.id}')" class='btn btn-danger btn-sm float-right mr-2'>Eliminar</button>
+                            </li>`;
+                    });
+                    list.innerHTML += `</ul>`;
+                });
+        }
+
+        function editCategory(id, name) {
+            document.getElementById("categoryId").value = id;
+            document.getElementById("categoryName").value = name;
+        }
+
+        function deleteCategory(id) {
+            fetch(`api/categories/${id}`, {
+                method: "DELETE"
+            })
+            .then(response => response.json())
+            .then(data => {
+                loadCategories();
+            });
+        }
+
+        function clearForm() {
+            document.getElementById("categoryId").value = '';
+            document.getElementById("categoryName").value = '';
+        }
+
+        // Cargar categorías al iniciar la página
+        loadCategories();
+    </script>
+</body>
+</html>

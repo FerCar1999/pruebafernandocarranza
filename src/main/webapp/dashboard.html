@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="dashboard.html">Dashboard</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="categories.html">Categorías</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="users.html">Usuarios</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="products.html">Productos</a>
+                </li>
+            </ul>
+            <button id="logoutButton" class="btn btn-danger">Cerrar Sesión</button>
+        </div>
+    </nav>
+    <div class="container mt-5">
+        <div id="sessionStatus" class="alert alert-info" role="alert"></div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Verificar si hay una sesión activa
+            fetch("api/auth/session")
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("sessionStatus").innerText = data.message;
+                    if (data.message === "No hay sesión iniciada") {
+                        window.location.href = "login.html"; // Redirige al login si no hay sesión
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al verificar la sesión:", error);
+                });
+
+            // Botón para cerrar sesión
+            document.getElementById("logoutButton").addEventListener("click", function() {
+                fetch("api/auth/logout", { method: "POST" })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                        window.location.href = "login.html"; // Redirigir al login
+                    })
+                    .catch(error => {
+                        console.error("Error al cerrar sesión:", error);
+                    });
+            });
+        });
+    </script>
+</body>
+</html>
